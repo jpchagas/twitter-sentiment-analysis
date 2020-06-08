@@ -1,0 +1,65 @@
+Package: tsa
+Title: Twitter Sentiment Analisys
+Version: 1.0.0.0
+Authors@R: 
+    c(person(given = "Gábor",
+             family = "Csárdi",
+             role = c("aut", "cre"),
+             email = "csardi.gabor@gmail.com"),
+      person(given = "Kirill",
+             family = "Müller",
+             role = "aut"),
+      person(given = "Jim",
+             family = "Hester",
+             role = "aut",
+             email = "james.f.hester@gmail.com"),
+      person(given = "Maëlle",
+             family = "Salmon",
+             role = "ctb",
+             comment = c(ORCID = "0000-0002-2815-0399")))
+Maintainer: Gábor Csárdi <csardi.gabor@gmail.com>
+Description: Tools to read, write, create, and manipulate DESCRIPTION files.
+    It is intended for packages that create or manipulate other packages.
+License: MIT + file LICENSE
+LazyData: true
+URL: https://github.com/r-lib/desc#readme
+BugReports: https://github.com/r-lib/desc/issues
+Depends:
+    R (>= 4.0.0)
+Suggests:
+    covr,
+    testthat,
+    whoami,
+    withr,
+    spelling,
+    gh
+Imports:
+    assertthat,
+    utils,
+    R6,
+    crayon,
+    rprojroot
+Encoding: UTF-8
+RoxygenNote: 6.1.0.9000
+Collate: 
+    'assertions.R'
+    'authors-at-r.R'
+    'built.R'
+    'classes.R'
+    'collate.R'
+    'constants.R'
+    'deps.R'
+    'description.R'
+    'encoding.R'
+    'latex.R'
+    'non-oo-api.R'
+    'package-archives.R'
+    'read.R'
+    'remotes.R'
+    'str.R'
+    'syntax_checks.R'
+    'urls.R'
+    'utils.R'
+    'validate.R'
+    'version.R'
+Language: en-US
