@@ -17,26 +17,37 @@ library(ggplot2)
 
 
 twitter_token <- create_token(
-  app = 'DSA Mentoring',
-  consumer_key = 'goAWKujEz6SSHt4agZp1o9Gm9',
-  consumer_secret = 'faXc99rocB55YNoUQDs4a6RSv2lKkILg8yL7SPCDM4z8K6Yqq9',
-  access_token = '1024320769952755719-CpDouvS6JMjFXBVNaNzHvsUGb1CfIX',
-  access_secret = '2tqcT62VHRy9nFh885zEynUUr4r5VhVtclUGEwDVZcSa4')
+  app = "",
+  consumer_key = "",
+  consumer_secret = "",
+  access_token = "",
+  access_secret = "")
 
 search_term <- readline("Qual termo você quer buscar?")
 
 rt <- NULL
 
-tw <- search_tweets(q = search_term[1],n = 10)
+tw <- search_30day(q = search_term[1],n = 10)
 
+# Check if  the from datetime isn't before to 30 days
+# This function it's necessary 'cuz the function to extract tweets, has a 30 days of limit range
+check_datetime <- function(eDatetime) {
+  
+}
 
-extract_data <- function() {
-
-  rt <- search_30day(search_term[1], n = 10,toDate = Sys.Date(),env_name = "research", token = twitter_token)
+# The input format datetime should be a string like this: "YYYYMMDDHHMM"
+extract_data <- function(fDatetime, eDatetime) {
+  rt <- search_30day(search_term[1],
+                     n = 10,
+                     fromDate = fDatetime,
+                     toDate = eDatetime,
+                     env_name = "",
+                     token = twitter_token)
+  return(rt)
     
 }
 
-extract_data()
+extract_data(fDatetime = "YYYYMMDDHHMM", eDatetime = "YYYYMMDDHHMM")
 
 #Function to transform data
 transform_data <- function() {
