@@ -5,7 +5,9 @@ install.packages('stringr')
 library(rtweet)
 library(plyr)
 library(stringr)
+library(lubridate)
 
+# Don't forget to use setwd("path/to/your/directory") to function source works!
 source("credentials.R")
 
 twitter_token <- create_token(
@@ -15,13 +17,15 @@ twitter_token <- create_token(
   access_token = getAcessToken(),
   access_secret = getAcessSecret())
 
-# Check if  the from datetime isn't before to 30 days
-# This function it's necessary 'cuz the function to extract tweets, has a 30 days of limit range
-check_datetime <- function(eDatetime) {
-  
+# This function should return 2 values: the actual and formatted datetime and the 30th day ago.
+get_datestimes <- function() {
+  actual_datetime = format(now(), "%Y%m%d%H%M")
+  thirtieth_day = format((now()-days(30)), "%Y%m%d%H%M")
+  return(c(actual_datetime, thirtieth_day))
 }
 
 # The input format datetime should be a string like this: "YYYYMMDDHHMM"
+<<<<<<< HEAD
 extract_data <- function(text) {
   #rt <- search_tweets(q = text,n = 10,lang = "pt")
    rt <- search_30day(text,
@@ -38,6 +42,17 @@ dt <- extract_data("Corona Vírus")
 View(dt)
 
 
+=======
+extract_data <- function() {
+  rt <- search_30day("covid19",
+                     n = 50,
+                     fromDate = get_datestimes()[2],
+                     toDate = get_datestimes()[1],
+                     env_name = getEnvName(),
+                     token = twitter_token)
+  return(as.data.frame(rt))
+}
+>>>>>>> 266b7bdab18b3efd0bb0f56f9a5b6f7b03f27e19
 
 #Function to transform data
 transform_data <- function() {
@@ -60,6 +75,10 @@ most_arroba <- function() {
 }
 
 #Function of most used words in tweets disregarding stopwords
+<<<<<<< HEAD
 most_words <- function() {
+=======
+most_word <- function() {
+>>>>>>> 266b7bdab18b3efd0bb0f56f9a5b6f7b03f27e19
   
 }

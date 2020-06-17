@@ -1,3 +1,6 @@
+# Credential files
+credentials.R
+
 # History files
 .Rhistory
 .Rapp.history
@@ -41,5 +44,12 @@ vignettes/*.pdf
 # VSCode Environment
 .vscode
 
+<<<<<<< HEAD
 #Credentials file
 credentials.R
+=======
+# Python
+.ipynb_checkpoints
+Python/.ipynb_checkpoints
+Python/ks/
+>>>>>>> 266b7bdab18b3efd0bb0f56f9a5b6f7b03f27e19
