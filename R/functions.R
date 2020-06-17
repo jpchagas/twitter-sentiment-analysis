@@ -8,6 +8,7 @@ library(plyr)
 library(stringr)
 library(lubridate)
 
+# Don't forget to use setwd("path/to/your/directory") to function source works!
 source("credentials.R")
 
 twitter_token <- create_token(
