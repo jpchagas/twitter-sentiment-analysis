@@ -1,3 +1,6 @@
+# Credential files
+credentials.R
+
 # History files
 .Rhistory
 .Rapp.history
