@@ -56,6 +56,6 @@ most_arroba <- function() {
 }
 
 #Function of most used words in tweets disregarding stopwords
-most_arroba <- function() {
+most_word <- function() {
   
 }
