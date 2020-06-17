@@ -40,3 +40,6 @@ vignettes/*.pdf
 
 # VSCode Environment
 .vscode
+
+#Credentials file
+credentials.R

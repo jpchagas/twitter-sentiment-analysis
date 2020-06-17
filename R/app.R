@@ -62,7 +62,7 @@ server <- function(input, output) {
   
   # Filter data based on selections
   output$table <- DT::renderDataTable(DT::datatable({
-    data <- search_tweets(q = input$text,n = 10,lang = "pt")
+    data <- extract_data(input$text)
     #if (input$man != "All") {
     #  data <- data[data$manufacturer == input$man,]
     #}
