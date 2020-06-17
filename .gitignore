@@ -40,3 +40,8 @@ vignettes/*.pdf
 
 # VSCode Environment
 .vscode
+
+# Python
+.ipynb_checkpoints
+Python/.ipynb_checkpoints
+Python/ks/
