@@ -1,5 +1,5 @@
 # Credential files
-credentials.R
+/R/credentials.R
 
 # History files
 .Rhistory
