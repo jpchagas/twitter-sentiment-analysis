@@ -1,14 +1,16 @@
-install.packages('rtweet')
-install.packages('plyr')
-install.packages('stringr')
+#install.packages('rtweet')
+#install.packages('plyr')
+#install.packages('stringr')
 
 library(rtweet)
 library(plyr)
 library(stringr)
 library(lubridate)
+library(dplyr)
 
 # Don't forget to use setwd("path/to/your/directory") to function source works!
 source("credentials.R")
+source("data_example.R")
 
 twitter_token <- create_token(
   app = getApp(),
@@ -25,7 +27,6 @@ get_datestimes <- function() {
 }
 
 # The input format datetime should be a string like this: "YYYYMMDDHHMM"
-<<<<<<< HEAD
 extract_data <- function(text) {
   #rt <- search_tweets(q = text,n = 10,lang = "pt")
    rt <- search_30day(text,
@@ -37,22 +38,9 @@ extract_data <- function(text) {
   return(rt)
 }
 
-dt <- extract_data("Corona Vírus")
+#dt <- extract_data("Corona Vírus")
 
-View(dt)
-
-
-=======
-extract_data <- function() {
-  rt <- search_30day("covid19",
-                     n = 50,
-                     fromDate = get_datestimes()[2],
-                     toDate = get_datestimes()[1],
-                     env_name = getEnvName(),
-                     token = twitter_token)
-  return(as.data.frame(rt))
-}
->>>>>>> 266b7bdab18b3efd0bb0f56f9a5b6f7b03f27e19
+#View(dt)
 
 #Function to transform data
 transform_data <- function() {
@@ -60,7 +48,18 @@ transform_data <- function() {
 }
 
 #Function of 5 most recent tweets with the highest number of retweets from one term
-five_most_recent_highest_retweets <- function() {
+five_most_recent_highest_retweets <- function(tw) {
+  
+  tw_temp <- tw %>%
+    filter(is_retweet == FALSE & lang == 'pt') %>%
+    select(screen_name, urls_t.co, text, quoted_retweet_count) %>%
+    arrange(desc(quoted_retweet_count)) %>%
+    mutate_if(is.factor, as.character) %>%
+    top_n(5)  
+  
+  colnames(tw_temp) <- c('Usuário', 'URL', 'Tweet','Nº de Retweets')
+  
+  return(tw_temp)
   
 }
 
@@ -75,10 +74,42 @@ most_arroba <- function() {
 }
 
 #Function of most used words in tweets disregarding stopwords
-<<<<<<< HEAD
 most_words <- function() {
-=======
-most_word <- function() {
->>>>>>> 266b7bdab18b3efd0bb0f56f9a5b6f7b03f27e19
   
+}
+
+geraViewTopTweets <- function(df) {
+  testelinha = 0
+  if (dim(df)[1] == 5) {
+    linha = 5
+  } else {
+    linha = dim(df)[1]
+  }
+  
+  vetor_html = list()
+  
+  for (i in 1:linha){
+    tweet <- df[i, 'Tweet']
+    vetor_html[[i]] <- geraHTML(df[i,])
+  }
+  
+  return (vetor_html)
+  
+}
+
+geraHTML <- function(tweet_linha){
+  return(
+    tags$div(class="list-group",
+             tags$a(href=tweet_linha['URL'], class="list-group-item list-group-item-action flex-column align-items-start active",
+                    tags$div(class="d-flex w-100 justify-content-between",
+                             tags$h5(class="mb-1", tweet_linha['Usuário']),
+                             tags$small(paste(as.character(tweet_linha['Nº de Retweets']),' retweets'))
+                    ),                        
+                    fluidRow(
+                      column(12,
+                             tags$p(tweet_linha['Tweet'])
+                      )
+                    )                        
+             )
+    ))
 }
