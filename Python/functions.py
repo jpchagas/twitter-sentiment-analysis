@@ -42,11 +42,26 @@ def most_hashtag():
 
 # FUNCTION OF MOST CITED @USER ACCOUNTS IN THE TWEETS
 
-def most_arroba():
+def most_arroba(query='felicidade -filter:retweets', lang='pt', items=100):
+    TWEETS = []
+    users = []
 
-    #code
+    for tweet in tw.tweepy.Cursor(api.search,
+                                  q=query,
+                                  lang=lang,
+                                  result_type='recent',
+                                  tweet_mode='extended'  # collect the full text (over 140 characters)
+                                  ).items(items):
 
-    return pass
+        TWEETS.append(tweet.full_text)
+
+        for line in TWEETS:
+            word_split = line.split()
+            for word in word_split:
+                if word.startswith("@"):
+                    users.append(word)
+
+    return pd.DataFrame(users)[0].value_counts()
 
 # FUNCTION OF MOST USED WORDS IN TWEETS DISREGARDING STOPWORDS
 
