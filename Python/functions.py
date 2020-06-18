@@ -5,24 +5,24 @@ import pandas as import pd
 
 # FUNCTION OF 5 MOST RECENT TWEETS WITH THE HIGHEST NUMBER OF RETWEETS
 
-def five_most_recent_highest_retweets(query = 'felicidade', retweets = 5, lang = 'pt', items = 200):
-    
+def five_most_recent_highest_retweets(query='felicidade', head=5, lang='pt', items=200):
     RETWEETS = []
 
     for tweet in tw.tweepy.Cursor(api.search,
-                        q= query, 
-                        lang= lang,
-                        result_type='recent',
-                        tweet_mode = 'extended'  # collect the full text (over 140 characters)
-                        ).items(items):
+                                  q=query,
+                                  lang=lang,
+                                  result_type='recent',
+                                  tweet_mode='extended'  # collect the full text (over 140 characters)
+                                  ).items(items):
 
-                        if (tweet.retweet_count > 0):
+        if (tweet.retweet_count > 0):
+            RETWEETS.append([tweet.full_text, tweet.retweet_count])  # collect tweet text and the number of retweets
 
-                            RETWEETS.append([tweet.full_text, tweet.retweet_count])
+        df = pd.DataFrame(RETWEETS, columns=['tweet', 'retweet_count']).drop_duplicates()  # delete all duplicated texts
+        df = df.groupby('tweet').sum()  # aggregate the same texts and adds up the number of different retweets.
+        df = df.sort_values(by='retweet_count', ascending=False)  # put retweets_count in descending order
 
-                        df = pd.DataFrame(RETWEETS, columns = ['tweet', 'retweet_count']).sort_values(by='retweet_count', ascending=False)
-                        df = df.drop_duplicates()
-    return df.head(retweets)
+    return df.head(head)
 
 # FUNCTION TO TRANSFORM DATA
 
@@ -42,11 +42,26 @@ def most_hashtag():
 
 # FUNCTION OF MOST CITED @USER ACCOUNTS IN THE TWEETS
 
-def most_arroba():
+def most_arroba(query='felicidade -filter:retweets', lang='pt', items=100):
+    TWEETS = []
+    users = []
 
-    #code
+    for tweet in tw.tweepy.Cursor(api.search,
+                                  q=query,
+                                  lang=lang,
+                                  result_type='recent',
+                                  tweet_mode='extended'  # collect the full text (over 140 characters)
+                                  ).items(items):
 
-    return pass
+        TWEETS.append(tweet.full_text)
+
+        for line in TWEETS:
+            word_split = line.split()
+            for word in word_split:
+                if word.startswith("@"):
+                    users.append(word)
+
+    return pd.DataFrame(users)[0].value_counts()
 
 # FUNCTION OF MOST USED WORDS IN TWEETS DISREGARDING STOPWORDS
 
