@@ -1,28 +1,37 @@
 import tw_auth as tw
 import pandas as import pd
 
-
-
 # FUNCTION OF 5 MOST RECENT TWEETS WITH THE HIGHEST NUMBER OF RETWEETS
 
-def five_most_recent_highest_retweets(query='felicidade', head=5, lang='pt', items=200):
-    RETWEETS = []
+query = 'felicidade'
+q_filter = ' -filter:retweet'
 
-    for tweet in tw.tweepy.Cursor(api.search,
+def extract_data(query=query, head=5, lang='pt', items=200):
+    
+    TWITTER_DATA = []
+
+    for tweet in tw.tweepy.Cursor(tw.api.search,
                                   q=query,
                                   lang=lang,
                                   result_type='recent',
                                   tweet_mode='extended'  # collect the full text (over 140 characters)
                                   ).items(items):
 
-        if (tweet.retweet_count > 0):
-            RETWEETS.append([tweet.full_text, tweet.retweet_count])  # collect tweet text and the number of retweets
+        TWITTER_DATA.append([tweet.id, tweet.created_at, tweet.user.location, tweet.full_text.replace('\n', ' '), 
+                                          tweet.retweet_count, [e['text'] for e in tweet._json['entities']['hashtags']]])
 
-        df = pd.DataFrame(RETWEETS, columns=['tweet', 'retweet_count']).drop_duplicates()  # delete all duplicated texts
-        df = df.groupby('tweet').sum()  # aggregate the same texts and adds up the number of different retweets.
-        df = df.sort_values(by='retweet_count', ascending=False)  # put retweets_count in descending order
+        df = pd.DataFrame(TWITTER_DATA, columns=['id','timestamp', 'location', 'tweet', 'retweet_count', 'hashtag'])
+        
+    return df
 
-    return df.head(head)
+
+def five_most_recent_highest_retweets(data = df, head=5):
+    
+    df_five = data[['tweet', 'retweet_count']].drop_duplicates() # delete all duplicated texts
+    df_five = df_five.groupby('tweet').sum() # aggregate the same texts and adds up the number of different retweets.
+    df_five = df_five.sort_values(by='retweet_count', ascending = False) # put retweets_count in descending order
+
+    return df_five.head(head)
 
 # FUNCTION TO TRANSFORM DATA
 
@@ -30,7 +39,7 @@ def transform_data():
 
     #code
 
-    return pass
+    pass
 
 # FUNCTION OF # MOST USED AND THEIR RELATIONSHIP
 
@@ -38,28 +47,20 @@ def most_hashtag():
 
     #code
 
-    return pass
+    pass
 
 # FUNCTION OF MOST CITED @USER ACCOUNTS IN THE TWEETS
 
-def most_arroba(query='felicidade -filter:retweets', lang='pt', items=100):
-    TWEETS = []
-    users = []
+def most_arroba(data = df, query=''.join([query, q_filter])):
 
-    for tweet in tw.tweepy.Cursor(api.search,
-                                  q=query,
-                                  lang=lang,
-                                  result_type='recent',
-                                  tweet_mode='extended'  # collect the full text (over 140 characters)
-                                  ).items(items):
+    tweets = df['tweet']
+    arroba = []
 
-        TWEETS.append(tweet.full_text)
-
-        for line in TWEETS:
-            word_split = line.split()
-            for word in word_split:
-                if word.startswith("@"):
-                    users.append(word)
+    for line in tweets:
+        word_split = line.split()
+        for word in word_split:
+            if word.startswith("@"):
+                arroba.append(word)
 
     return pd.DataFrame(users)[0].value_counts()
 
@@ -69,4 +70,4 @@ def most_words():
 
     #code
 
-    return pass
+    pass
