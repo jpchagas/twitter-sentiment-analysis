@@ -22,7 +22,7 @@ twitter_token <- create_token(
 extract_data <- function(text) {
   #rt <- search_tweets(q = text,n = 10,lang = "pt")
    rt <- search_30day(text,
-                     n = 1000,
+                     n = 100,
                      fromDate = Sys.Date()-30,
                      toDate = Sys.Date(),
                      env_name = getEnvName(),
@@ -56,14 +56,40 @@ five_most_recent_highest_retweets <- function(tw) {
 }
 
 #Function of # most used and their relationships
-most_hashtag <- function() {
-  
+most_hashtag <- function(twitter_df) {
+  vector_hashtags = c()
+  hashtags_subset = twitter_df[, c("hashtags")]
+  hashtags_subset = hashtags_subset[!is.na(hashtags_subset$hashtags),]
+  for (hashtags in hashtags_subset) {
+    if (length(hashtags) > 1) {
+      for (element in hashtags) {
+        vector_hashtags = c(vector_hashtags, element)
+      }
+    } else {
+      vector_hashtags = c(vector_hashtags, names)
+    }
+  }
+  df_count_hashtags = tibble(vector_hashtags) %>%
+    count(vector_hashtags, name = "count_hashtags")
+  return(df_count_hashtags)
 }
 
 #Function of most cited @User accounts in the tweets
-most_arroba <- function(tw) {
-  column_names <- tw %>%
-    count(mentions_screen_name, wt = NULL, sort = FALSE, name = "freq")
+most_arroba <- function(twitter_df) {
+  vector_names = c()
+  names_subset = twitter_df[, c("mentions_screen_name")]
+  names_subset = names_subset[!is.na(names_subset$mentions_screen_name),]
+  for (names in names_subset) {
+    if (length(names) > 1) {
+      for (element in names) {
+        vector_names = c(vector_names, element)
+      }
+    } else {
+        vector_names = c(vector_names, names)
+    }
+  }
+  df_count_names = tibble(vector_names) %>% count(vector_names, name = "count_names")
+  return(df_count_names)
 }
 
 #Function of most used words in tweets disregarding stopwords
