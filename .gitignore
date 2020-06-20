@@ -51,3 +51,7 @@ credentials.R
 Python/.ipynb_checkpoints
 Python/ks/
 >>>>>>> 266b7bdab18b3efd0bb0f56f9a5b6f7b03f27e19
+
+
+# streamlit variables
+__pycache__
