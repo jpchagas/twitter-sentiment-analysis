@@ -1,12 +1,10 @@
-# Credential files
-credentials.R
-
 # History files
 .Rhistory
 .Rapp.history
 
 # Session Data files
 .RData
+.rds
 
 # User-specific files
 .Ruserdata

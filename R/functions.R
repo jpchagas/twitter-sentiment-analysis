@@ -5,7 +5,6 @@
 library(rtweet)
 library(plyr)
 library(stringr)
-library(lubridate)
 library(dplyr)
 
 # Don't forget to use setwd("path/to/your/directory") to function source works!
@@ -18,13 +17,6 @@ twitter_token <- create_token(
   consumer_secret = getConsumerSecret(),
   access_token = getAcessToken(),
   access_secret = getAcessSecret())
-
-# This function should return 2 values: the actual and formatted datetime and the 30th day ago.
-get_datestimes <- function() {
-  actual_datetime = format(now(), "%Y%m%d%H%M")
-  thirtieth_day = format((now()-days(30)), "%Y%m%d%H%M")
-  return(c(actual_datetime, thirtieth_day))
-}
 
 # The input format datetime should be a string like this: "YYYYMMDDHHMM"
 extract_data <- function(text) {
@@ -69,8 +61,9 @@ most_hashtag <- function() {
 }
 
 #Function of most cited @User accounts in the tweets
-most_arroba <- function() {
-  
+most_arroba <- function(tw) {
+  column_names <- tw %>%
+    count(mentions_screen_name, wt = NULL, sort = FALSE, name = "freq")
 }
 
 #Function of most used words in tweets disregarding stopwords
