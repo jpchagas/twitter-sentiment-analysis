@@ -17,41 +17,34 @@ from string import punctuation
 
 # FUNCTION OF 5 MOST RECENT TWEETS WITH THE HIGHEST NUMBER OF RETWEETS
 
-query = 'covid'
+q_query = ' -filter:retweets'
 
 
-def extract_data(query, head=5, lang='pt', items=500):
-
-    RETWEET = []
+def extract_data(query, head=5, lang='pt', items=100):
+    # RETWEET = []
     TWEET = []
-
     for tweet in tw.tweepy.Cursor(tw.api.search,
-                                  q=query,
+                                  q=query+q_query,
                                   lang=lang,
                                   result_type='recent',
                                   # collect the full text (over 140 characters)
                                   tweet_mode='extended'
                                   ).items(items):
-
-        if ("RT @" in tweet.full_text):
-
-            RETWEET.append([tweet.id, tweet.created_at, tweet.user.location, tweet.full_text.replace('\n', ' '),
-                            tweet.retweet_count, [e['text'] for e in tweet._json['entities']['hashtags']]])
-
-        else:
-
-            TWEET.append([tweet.id, tweet.created_at, tweet.user.location, tweet.full_text.replace('\n', ' '),
-                          tweet.retweet_count, [e['text'] for e in tweet._json['entities']['hashtags']]])
-
-    return TWEET, RETWEET
+        # if ("RT @" in tweet.full_text):
+        #     RETWEET.append([tweet.id, tweet.created_at, tweet.user.location, tweet.full_text.replace('\n', ' '),
+        #                                   tweet.retweet_count, [e['text'] for e in tweet._json['entities']['hashtags']]])
+        # else:
+        TWEET.append([tweet.id, tweet.created_at, tweet.user.location, tweet.full_text.replace('\n', ' '),
+                      tweet.retweet_count, [e['text'] for e in tweet._json['entities']['hashtags']]])
+        TW = pd.DataFrame(TWEET, columns=[
+                          'id', 'timestamp', 'location', 'tweet', 'retweet_count', 'hashtags'])
+        # rtw = pd.DataFrame(data, RETWEET=['id', 'timestamp', 'location', 'tweet', 'retweet_count', 'hashtags'])
+    return TW
 
 
-def five_most_recent_highest_retweets(data=rtw, head=5):
+def five_most_recent_highest_retweets(tw, head=5):
 
-    rtweets = pd.DataFrame(data, columns=[
-                           'id', 'timestamp', 'location', 'tweet', 'retweet_count', 'hashtags'])
-    df_five = rtweets[['tweet', 'retweet_count']
-                      ].drop_duplicates()  # delete all duplicated texts
+    df_five = tw[['tweet', 'retweet_count']]  # delete all duplicated texts
     # aggregate the same texts and adds up the number of different retweets.
     df_five = df_five.groupby('tweet').sum()
     # put retweets_count in descending order
@@ -84,7 +77,7 @@ def most_hashtag(df_tweets):
     te = TransactionEncoder()
     te_ary = te.fit(hashtags).transform(hashtags)
     df = pd.DataFrame(te_ary, columns=te.columns_)
-    frequent_itemsets = apriori(df, min_support=0.026, use_colnames=True)
+    frequent_itemsets = apriori(df, min_support=0.1, use_colnames=True)
 
     rules = association_rules(
         frequent_itemsets, metric="lift", min_threshold=1)
@@ -95,12 +88,9 @@ def most_hashtag(df_tweets):
 # FUNCTION OF MOST CITED @USER ACCOUNTS IN THE TWEETS
 
 
-def most_arroba(data=tw):
+def most_arroba(data):
 
-    tw = pd.DataFrame(data, columns=[
-                      'id', 'timestamp', 'location', 'tweet', 'retweet_count', 'hashtags'])
-
-    tweets = tw['tweet']
+    tweets = data['tweet']
     arroba = []
 
     for line in tweets:
@@ -109,8 +99,8 @@ def most_arroba(data=tw):
             if word.startswith("@"):
                 arroba.append(word)
 
-    top_10 = pd.DataFrame(arroba)[0].value_counts(
-    ).sort_values(ascending=False).head(10)
+    top_10 = pd.DataFrame(arroba, columns=['count'])[
+        'count'].value_counts().sort_values(ascending=False).head(10)
 
     return top_10
 
@@ -136,7 +126,7 @@ def most_words(df_tweets):
             txt += t
         return txt
 
-    all_text = get_all_text(df_tweets.tweet_text)
+    all_text = get_all_text(df_tweets.tweet)
 
     sub_text = re.sub('[-|0-9]', '', all_text)
     sub_text = re.sub(r'[-./*_~ºª¿{}æ·?#!$&%@,":"";()\']', '', sub_text)
