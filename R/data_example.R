@@ -1,10 +1,11 @@
-#install.packages(tm)
-#install.packages(dplyr)
-#install.packages("wordcloud")  #wordcloud
+#install.packages('tm')
+#install.packages('dplyr')
+#install.packages("wordcloud")
+#install.packages("SnowballC")
 
 library(tm)
 library(dplyr)
-library(wordcloud)  #wordcloud
+library(wordcloud)
 
 df <- data.frame(c(98,68,45,30,10), c("Esse é o tweet número 1", 
                                  "Esse é o tweet número 2", 

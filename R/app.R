@@ -2,6 +2,8 @@
 #install.packages('tm')
 #install.packages('sentimentr')
 #install.packages('Rstem',repos = "http://www.omegahat.net/R")
+#install.packages('ggplot2')
+#install.packages('vctrs')
 
 
 library(shiny)
@@ -52,8 +54,8 @@ ui <- fluidPage(theme = "bootstrap.css",
       fluidRow(
         column(width = 12,
                h4("@Users mais citados"),
-               plotOutput("usuario", height = 200)   
-        ),
+               plotOutput("usuario", height = 175)   
+        )
       ),
       fluidRow(
         column(width = 6,
@@ -77,7 +79,7 @@ server <- function(input, output) {
     observeEvent(input$id_btn_search, {
       
       #tw <- extract_data(input$id_txt_search)
-      tw <- read.csv2(file = 'Tweets.csv', encoding = 'UTF-8')
+      tw <-  read_twitter_csv(file = 'Tweets2.csv')
       
       tw_five <- five_most_recent_highest_retweets(tw)
       
@@ -87,8 +89,8 @@ server <- function(input, output) {
       
       output$distPlot <- renderPlot({
         
-        ggplot(data=df, aes(x=dose, y=len)) +
-          geom_bar(stat="identity") +
+        ggplot(data=tw_five, aes(x=dose, y=len)) +
+          geom_bar() +
           coord_flip()
         
       })
@@ -112,15 +114,16 @@ server <- function(input, output) {
       })
       
       output$usuario <- renderPlot({
-        ggplot(data=df, aes(x=Tweet, reorder(Tweet, -Quant_Rtweets), y=Quant_Rtweets)) +
-          geom_bar(stat="identity") +
-          coord_flip()
+        
+        ggplot(data=tw_five, aes(x=Usuario, y=N_Retweets)) +
+          geom_bar(stat="identity") + 
+          scale_fill_grey() + 
+          coord_flip() + 
+          theme_classic()
+        
       })
       
     })
   }
 
 shinyApp(ui = ui, server = server)
-
-
-

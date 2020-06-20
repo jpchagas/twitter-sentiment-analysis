@@ -1,6 +1,7 @@
 #install.packages('rtweet')
 #install.packages('plyr')
 #install.packages('stringr')
+#install.packages('dplyr')
 
 library(rtweet)
 library(plyr)
@@ -27,29 +28,33 @@ extract_data <- function(text) {
                      toDate = Sys.Date(),
                      env_name = getEnvName(),
                      token = twitter_token)
+   
+  rt <- rt %>%
+    filter(is_retweet == FALSE & lang == 'pt')
+    
   return(rt)
 }
 
-#dt <- extract_data("Corona Vírus")
+#dt <- extract_data("Corona V�?rus")
 
 #View(dt)
 
 #Function to transform data
-transform_data <- function() {
-  
-}
+#transform_data <- function(tw) {
+#
+#}
 
 #Function of 5 most recent tweets with the highest number of retweets from one term
 five_most_recent_highest_retweets <- function(tw) {
   
   tw_temp <- tw %>%
-    filter(is_retweet == FALSE & lang == 'pt') %>%
+    
     select(screen_name, urls_t.co, text, quoted_retweet_count) %>%
     arrange(desc(quoted_retweet_count)) %>%
     mutate_if(is.factor, as.character) %>%
-    top_n(5)  
+    slice(1:5)
   
-  colnames(tw_temp) <- c('Usuário', 'URL', 'Tweet','Nº de Retweets')
+  colnames(tw_temp) <- c('Usuario', 'URL', 'Tweet','N_Retweets')
   
   return(tw_temp)
   
@@ -121,8 +126,8 @@ geraHTML <- function(tweet_linha){
     tags$div(class="list-group",
              tags$a(href=tweet_linha['URL'], class="list-group-item list-group-item-action flex-column align-items-start active",
                     tags$div(class="d-flex w-100 justify-content-between",
-                             tags$h5(class="mb-1", tweet_linha['Usuário']),
-                             tags$small(paste(as.character(tweet_linha['Nº de Retweets']),' retweets'))
+                             tags$h5(class="mb-1", tweet_linha['Usuario']),
+                             tags$small(paste(as.character(tweet_linha['N_Retweets']),' retweets'))
                     ),                        
                     fluidRow(
                       column(12,
