@@ -10,8 +10,8 @@ library(shiny)
 library(ggplot2)
 library(RColorBrewer)
 source("functions.R")
-#library(tm)
-#library(sentimentr)
+library(tm)
+library(sentimentr)
 #library(Rstem)
 
 
@@ -79,8 +79,8 @@ server <- function(input, output) {
     
     observeEvent(input$id_btn_search, {
       
-      #tw <- extract_data(input$id_txt_search)
-      tw <-  read_twitter_csv(file = 'Tweets2.csv')
+      tw <- extract_data(input$id_txt_search)
+      #tw <-  read_twitter_csv(file = 'Tweets2.csv')
       
       tw_five <- five_most_recent_highest_retweets(tw)
       

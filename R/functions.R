@@ -23,7 +23,7 @@ twitter_token <- create_token(
 extract_data <- function(text) {
   #rt <- search_tweets(q = text,n = 10,lang = "pt")
    rt <- search_30day(text,
-                     n = 100,
+                     n = 1000,
                      fromDate = Sys.Date()-30,
                      toDate = Sys.Date(),
                      env_name = getEnvName(),
@@ -35,7 +35,7 @@ extract_data <- function(text) {
   return(rt)
 }
 
-#dt <- extract_data("Corona VÃ?rus")
+#dt <- extract_data("Corona V??rus")
 
 #View(dt)
 
