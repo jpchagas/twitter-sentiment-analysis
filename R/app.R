@@ -8,6 +8,7 @@
 
 library(shiny)
 library(ggplot2)
+library(RColorBrewer)
 source("functions.R")
 #library(tm)
 #library(sentimentr)
@@ -95,7 +96,6 @@ server <- function(input, output) {
         
       })
       
-      
       output$tweets <-renderTable(
         tw_five,
         options = list(dom = 't', 
@@ -115,11 +115,12 @@ server <- function(input, output) {
       
       output$usuario <- renderPlot({
         
-        ggplot(data=tw_five, aes(x=Usuario, y=N_Retweets)) +
-          geom_bar(stat="identity") + 
-          scale_fill_grey() + 
-          coord_flip() + 
-          theme_classic()
+        ggplot(data=most_arroba(tw), aes(x=vector_names, y=count_names)) +
+          geom_bar(stat="identity", fill='lightblue') +
+          xlab('Usuários') + 
+          ylab('Citações') + 
+          theme_minimal(base_size = 12) +
+          coord_flip() 
         
       })
       
