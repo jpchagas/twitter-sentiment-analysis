@@ -19,7 +19,7 @@ from functions import *
 
 """
 
-# Extração de tweets com a plavra input
+# Extração de tweets com a palavra input
 
 
 @st.cache
@@ -63,9 +63,10 @@ if input_word != '':
         users = most_arroba(df_tweets)  # chamada da função
 
         """ ### Usuários mais citados """
+        users.plot.barh(stacked=True)
 
         plot_users = px.bar(users, y=users.index, x='count',
-                            text='count', labels={})
+                            text='count', color='count')
         plot_users['layout']['yaxis']['autorange'] = "reversed"
 
         st.plotly_chart(plot_users)
