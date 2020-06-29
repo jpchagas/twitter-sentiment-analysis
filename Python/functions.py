@@ -63,12 +63,45 @@ def most_hashtag(df_tweets):
     from mlxtend.frequent_patterns import association_rules
 
     data = df_tweets.hashtags.apply(lambda x: np.nan if len(x) <= 0 else x)
-    hashtags = list(data.dropna())
+    all_hashtags = list(data.dropna())
+
+    hashtags = []
+    for i in all_hashtags:
+        for j in i:
+            hashtags.append(j)
+
+    hash_str = ''
+    for i in hashtags:
+        hash_str += i + ' '
+
+        hash_str = hash_str.lower()
+        hashtags2 = hash_str.split()
+
+    freq = FreqDist(hashtags2)
+    hash_most_freq = pd.DataFrame(data=freq.most_common(
+        10), columns=['Hashtag', 'Frequency'])
+    list_freq = list(hash_most_freq.Hashtag)
+
+    all_hashtags_lower = [[h.lower() for h in line] for line in all_hashtags]
+
+    def select_hashtag(freq, all_hash):
+        select = []
+
+        for list_hash in all_hash:
+            for f in freq:
+                if (len(list_hash) >= 2 and (f in list_hash)):
+                    select.append(list_hash)
+                    break
+                else:
+                    pass
+        return select
+
+    select = select_hashtag(list_freq, all_hashtags_lower)
 
     te = TransactionEncoder()
-    te_ary = te.fit(hashtags).transform(hashtags)
+    te_ary = te.fit(select).transform(select)
     df = pd.DataFrame(te_ary, columns=te.columns_)
-    frequent_itemsets = apriori(df, min_support=0.1, use_colnames=True)
+    frequent_itemsets = apriori(df, min_support=0.2, use_colnames=True)
 
     rules = association_rules(
         frequent_itemsets, metric="lift", min_threshold=1)
@@ -124,14 +157,20 @@ def most_words(df_tweets):
     sub_text = re.sub(r'http\S+', '', sub_text)
     sub_text = sub_text.lower()
     sub_text = re.sub('ai', 'ia', sub_text)
-    sub_text = re.sub('mias', 'mais', sub_text)
 
     nltk_stopwords = nltk.corpus.stopwords.words('portuguese')
     my_stopwords = ['pra', 'pro', 'tb', 'vc', 'aí', 'tá', 'ah',
                     'eh', 'oh', 'msm', 'q', 'r', 'lá', 'ue', 'ué', 'pq']
 
+    s = pd.read_csv('../portuguese_stopwords.txt', header=None)
+    stop = s.values.tolist()
+    stopwords2 = []
+    for i in stop:
+        stopwords2.append(i[0])
+
     def RemoveStopWords(text):
-        stopwords = set(nltk_stopwords + my_stopwords + list(punctuation))
+        stopwords = set(nltk_stopwords + my_stopwords +
+                        stopwords2 + list(punctuation))
         word = [i for i in text.split() if not i in stopwords]
         return (" ".join(word))
 
