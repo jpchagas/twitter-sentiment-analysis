@@ -9,14 +9,38 @@ import matplotlib.pyplot as plt
 from nltk import FreqDist
 import networkx as nx
 
+from pathlib import Path # para a logo
+import base64 # para a logo
 
 from functions import *
 
+### LOGO
+
+# Main
+
+def img_to_bytes(img_path):
+    img_bytes = Path(img_path).read_bytes()
+    encoded = base64.b64encode(img_bytes).decode()
+    return encoded
+
+# Side bar
+
+sidebar_html = "<img src='data:image/png;base64,{}' class='img-fluid'>".format(
+    img_to_bytes("logo.png")
+)
+st.sidebar.markdown(
+    sidebar_html, unsafe_allow_html=True,
+)
+
+### FIM LOGO
 
 """
-# Twitter Busca
+# Bem vind@! Que tal analisar uns tweets?
 
-
+O Twitter é uma rede social que permite, aos usuários, expor o que pensam, enviar e receber atualizações de outros usuários,
+verificar notícias, avaliar produtos e serviços, dentre outros. Desse modo, tornou-se uma grande fonte de dados onde você pode
+buscar pelo assunto que tem curiosidade ou, mais profissionalmente, sua empresa pode buscar saber o quanto seu produto ou serviço 
+é aceito ou rejeitado pelo cosumidor.
 """
 
 # Extração de tweets com a plavra input
@@ -27,7 +51,13 @@ def load_data(p_input):
     df = extract_data(p_input)
     return df
 
+##### SIDE BAR
 
+st.sidebar.markdown(" ")
+st.sidebar.markdown(" ")
+
+# st.sidebar.markdown("Bem Vindx, ")
+st.sidebar.markdown(""" Definimos uma busca nos **500 tweets** originais (sem retweet) mais recentes.""")
 st.sidebar.markdown(""" ## Insira uma palavra para buscar: """)
 input_word = st.sidebar.text_input('')
 
@@ -37,6 +67,9 @@ check2 = st.sidebar.checkbox('Os 10 usuários mais citados')
 check3 = st.sidebar.checkbox('As palavras mais usadas')
 check4 = st.sidebar.checkbox('As hashtags mais usada e suas relações')
 
+##### FIM SIDE BAR
+
+##### FUNCTIONS
 
 if input_word != '':
     df_tweets = load_data(input_word)
@@ -62,7 +95,7 @@ if input_word != '':
 
         users = most_arroba(df_tweets)  # chamada da função
 
-        """ ### Usuários mais citados """
+        """ ### @Usuários mais citados """
 
         plot_users = px.bar(users, y=users.index, x='count',
                             text='count', labels={})
@@ -114,7 +147,8 @@ if input_word != '':
         rules.antecedents = rules.antecedents.apply(lambda x: next(iter(x)))
         rules.consequents = rules.consequents.apply(lambda x: next(iter(x)))
 
-        """ ### Como as hashtags mais usadas se associam """
+        """ ### Como as hashtags mais usadas se associam 
+        Caso não apareça nada, é porque não há associação."""
         fig, ax = plt.subplots(figsize=(16, 9))
         GA = nx.from_pandas_edgelist(
             rules, source='antecedents', target='consequents')
