@@ -4,7 +4,7 @@ import tweepy
 
 # KEY READING - PUBLIC MODE
 
-with open('ks/twtk.txt', 'r') as file:
+with open('.kt/twtk.txt', 'r') as file:
     CONSUMER_KEY = file.readline().strip('\n')
     CONSUMER_SECRET_KEY = file.readline().strip('\n')
 
