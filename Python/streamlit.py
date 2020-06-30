@@ -9,6 +9,7 @@ import matplotlib.pyplot as plt
 from nltk import FreqDist
 import networkx as nx
 
+from PIL import Image
 from pathlib import Path # para a logo
 import base64 # para a logo
 
@@ -26,21 +27,20 @@ def img_to_bytes(img_path):
 # Side bar
 
 sidebar_html = "<img src='data:image/png;base64,{}' class='img-fluid'>".format(
-    img_to_bytes("logo.png")
-)
-st.sidebar.markdown(
-    sidebar_html, unsafe_allow_html=True,
-)
+    img_to_bytes("logo.png"))
+
+st.sidebar.markdown(sidebar_html, unsafe_allow_html=True,)
 
 ### FIM LOGO
 
 """
 # Bem vind@! Que tal analisar uns tweets?
 
-O Twitter é uma rede social que permite, aos usuários, expor o que pensam, enviar e receber atualizações de outros usuários,
-verificar notícias, avaliar produtos e serviços, dentre outros. Desse modo, tornou-se uma grande fonte de dados onde você pode
-buscar pelo assunto que tem curiosidade ou, mais profissionalmente, sua empresa pode buscar saber o quanto seu produto ou serviço 
-é aceito ou rejeitado pelo cosumidor.
+O Twitter é uma rede social que permite, aos usuários, expor o que pensam, enviar e receber 
+atualizações de outros usuários, verificar notícias, avaliar produtos e serviços, dentre outros. 
+Desse modo, tornou-se uma grande fonte de dados onde você pode buscar pelo assunto que tem 
+curiosidade ou, mais profissionalmente, sua empresa pode buscar saber o quanto seu produto ou 
+serviço é aceito ou rejeitado pelo cosumidor.
 """
 
 # Extração de tweets com a plavra input
@@ -55,12 +55,13 @@ def load_data(p_input):
 
 st.sidebar.markdown(" ")
 st.sidebar.markdown(" ")
-
-# st.sidebar.markdown("Bem Vindx, ")
 st.sidebar.markdown(""" Definimos uma busca nos **500 tweets** originais (sem retweet) mais recentes.""")
 st.sidebar.markdown(""" ## Insira uma palavra para buscar: """)
+
+# word input
 input_word = st.sidebar.text_input('')
 
+# checks
 st.sidebar.markdown(""" ### Selecione as opções de busca: """)
 check1 = st.sidebar.checkbox('Os 5 tweets mais retweetados')
 check2 = st.sidebar.checkbox('Os 10 usuários mais citados')
@@ -73,6 +74,7 @@ check4 = st.sidebar.checkbox('As hashtags mais usada e suas relações')
 
 if input_word != '':
     df_tweets = load_data(input_word)
+    st.sidebar.markdown(len(input_word))
 
     #######################################################################
 
@@ -85,7 +87,7 @@ if input_word != '':
 
         # Mostra o resultado dos 5 tweets na tela
 
-        """ ### 5 Tweets mais retweetados:""", tweets_5
+        """ ### 5 Tweets mais retweetados:""", st.table(tweets_5)
 
     #######################################################################
 
@@ -125,13 +127,17 @@ if input_word != '':
         st.plotly_chart(plot_freq)
 
         # Plota a nuvem de palavras
-        """ ### Nuvem de palavras """
+        """ ### Nuvem de palavras 
+        Quanto mais frequente a palavra, maior ela é. """
+
+        twitter_fig = np.array(Image.open("twitter_black.png"))
 
         words_str = ' '.join(words)  # word list into a string
 
         wordcloud = WordCloud(max_font_size=100, width=1520,
-                              height=535, max_words=100).generate(words_str)
-        plt.figure(figsize=(16, 9))
+                              height=535, max_words=100,
+                              mask=twitter_fig, background_color='white').generate(words_str)
+        plt.figure(figsize=(8, 7))
         plt.imshow(wordcloud, interpolation="bilinear")
         plt.axis("off")
         st.pyplot()
@@ -147,7 +153,7 @@ if input_word != '':
         rules.antecedents = rules.antecedents.apply(lambda x: next(iter(x)))
         rules.consequents = rules.consequents.apply(lambda x: next(iter(x)))
 
-        """ ### Como as hashtags mais usadas se associam 
+        """ ### Associação entre #hashtags 
         Caso não apareça nada, é porque não há associação."""
         fig, ax = plt.subplots(figsize=(16, 9))
         GA = nx.from_pandas_edgelist(
