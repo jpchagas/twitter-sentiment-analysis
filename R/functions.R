@@ -6,7 +6,7 @@
 library(rtweet)
 library(plyr)
 library(stringr)
-library(dplyr)
+library(tidyverse)
 
 # Don't forget to use setwd("path/to/your/directory") to function source works!
 source("credentials.R")
@@ -77,6 +77,11 @@ most_hashtag <- function(twitter_df) {
   df_count_hashtags = tibble(vector_hashtags) %>%
     count(vector_hashtags, name = "count_hashtags")
   return(df_count_hashtags)
+}
+
+hashtags_relationships <- function(twiitter_df) {
+  hashtags_subset = twitter_df[, c("hashtags")]
+  hashtags_subset = hashtags_subset[!is.na(hashtags_subset$hashtags),]
 }
 
 #Function of most cited @User accounts in the tweets
