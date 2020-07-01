@@ -19,8 +19,7 @@ from string import punctuation
 
 q_query = ' -filter:retweets'
 
-
-def extract_data(query, head=5, lang='pt', items=100):
+def extract_data(query, head=5, lang='pt', items=500):
     # RETWEET = []
     TWEET = []
     for tweet in tw.tweepy.Cursor(tw.api.search,
@@ -44,22 +43,14 @@ def extract_data(query, head=5, lang='pt', items=100):
 
 def five_most_recent_highest_retweets(tw, head=5):
 
-    df_five = tw[['tweet', 'retweet_count']]  # delete all duplicated texts
+    df_five = tw[['tweet', 'retweet_count']].drop_duplicates()  # delete all duplicated texts
     # aggregate the same texts and adds up the number of different retweets.
     df_five = df_five.groupby('tweet').sum()
     # put retweets_count in descending order
-    df_five = df_five.sort_values(by='retweet_count', ascending=False)
+    df_five = df_five.sort_values(by='retweet_count', ascending=False).head(head)
 
-    return df_five.head(head)
+    return df_five
 
-# FUNCTION TO TRANSFORM DATA
-
-
-def transform_data():
-
-    # code
-
-    pass
 
 # FUNCTION OF # MOST USED AND THEIR RELATIONSHIP
 
