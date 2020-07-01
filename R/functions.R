@@ -21,7 +21,6 @@ twitter_token <- create_token(
 
 # The input format datetime should be a string like this: "YYYYMMDDHHMM"
 extract_data <- function(text) {
-  #rt <- search_tweets(q = text,n = 10,lang = "pt")
    rt <- search_30day(text,
                      n = 1000,
                      fromDate = Sys.Date()-30,
@@ -63,8 +62,8 @@ five_most_recent_highest_retweets <- function(tw) {
 #Function of # most used and their relationships
 most_hashtag <- function(twitter_df) {
   vector_hashtags = c()
-  hashtags_subset = twitter_df[, c("hashtags")]
-  hashtags_subset = hashtags_subset[!is.na(hashtags_subset$hashtags),]
+  hashtags_subset %>%
+    subset(subset = !is.na(hashtags), select = hashtags)
   for (hashtags in hashtags_subset) {
     if (length(hashtags) > 1) {
       for (element in hashtags) {
@@ -80,8 +79,15 @@ most_hashtag <- function(twitter_df) {
 }
 
 hashtags_relationships <- function(twiitter_df) {
-  hashtags_subset = twitter_df[, c("hashtags")]
-  hashtags_subset = hashtags_subset[!is.na(hashtags_subset$hashtags),]
+  two_or_more_hashtags = c()
+  only_hashtags = tweets %>%
+    subset(!is.na(hashtags), select = hashtags)
+  for (hashtags in only_hashtags) {
+    if (length(hashtags)>1) {
+      two_or_more_hashtags = c(two_or_more_hashtags, hashtags)
+      }
+    }
+  return(two_or_more_hashtags)
 }
 
 #Function of most cited @User accounts in the tweets
