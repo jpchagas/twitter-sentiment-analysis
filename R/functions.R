@@ -80,14 +80,18 @@ most_hashtag <- function(twitter_df) {
 
 hashtags_relationships <- function(twiitter_df) {
   two_or_more_hashtags = c()
-  only_hashtags = tweets %>%
+  only_hashtags = twiitter_df %>%
     subset(!is.na(hashtags), select = hashtags)
-  for (hashtags in only_hashtags) {
-    if (length(hashtags)>1) {
-      two_or_more_hashtags = c(two_or_more_hashtags, hashtags)
-      }
+  for (element in only_hashtags) {
+    if (length(element)>1) {
+      two_or_more_hashtags = c(two_or_more_hashtags, element)
     }
-  return(two_or_more_hashtags)
+  }
+  rules = two_or_more_hashtags %>%
+    as("transactions") %>%
+    apriori(parameter = list(supp = 0.001, conf = 0.7, minlen=2)) %>%
+    head(n = 10, by = "confidence")
+  return(plot(rules, method = "graph",  engine = "htmlwidget"))
 }
 
 #Function of most cited @User accounts in the tweets
