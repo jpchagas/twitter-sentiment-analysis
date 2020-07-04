@@ -10,14 +10,15 @@ from nltk import FreqDist
 import networkx as nx
 
 from PIL import Image
-from pathlib import Path # para a logo
-import base64 # para a logo
+from pathlib import Path  # para a logo
+import base64  # para a logo
 
 from functions import *
 
-### LOGO
+# LOGO
 
 # Main
+
 
 def img_to_bytes(img_path):
     img_bytes = Path(img_path).read_bytes()
@@ -26,21 +27,21 @@ def img_to_bytes(img_path):
 
 # Side bar
 
+
 sidebar_html = "<img src='data:image/png;base64,{}' class='img-fluid'>".format(
     img_to_bytes("logo.png"))
 
 st.sidebar.markdown(sidebar_html, unsafe_allow_html=True,)
 
-### FIM LOGO
+# FIM LOGO
 
 """
 # Bem vind@! Que tal analisar uns tweets?
 
-O Twitter é uma rede social que permite, aos usuários, expor o que pensam, enviar e receber 
-atualizações de outros usuários, verificar notícias, avaliar produtos e serviços, dentre outros. 
-Desse modo, tornou-se uma grande fonte de dados onde você pode buscar pelo assunto que tem 
-curiosidade ou, mais profissionalmente, sua empresa pode buscar saber o quanto seu produto ou 
-serviço é aceito ou rejeitado pelo cosumidor.
+O Twitter é uma rede social que permite ao usuário expor o que pensa, enviar e receber 
+atualizações de outros usuários, acompanhar notícias, avaliar produtos e serviços, etc. 
+O que torna essa rede social uma grande fonte de dados, onde é possível buscar pelo assunto de interesse, 
+ou, mais profissionalmente, sua empresa pode saber como seu produto ou serviço está sendo visto pelo cosumidor.
 """
 
 # Extração de tweets com a plavra input
@@ -51,11 +52,13 @@ def load_data(p_input):
     df = extract_data(p_input)
     return df
 
-##### SIDE BAR
+# SIDE BAR
+
 
 st.sidebar.markdown(" ")
 st.sidebar.markdown(" ")
-st.sidebar.markdown(""" Definimos uma busca nos **500 tweets** originais (sem retweet) mais recentes.""")
+st.sidebar.markdown(
+    """ Definimos uma busca dos **500 tweets** mais recentes para análise!""")
 st.sidebar.markdown(""" ## Insira uma palavra para buscar: """)
 
 # word input
@@ -68,9 +71,10 @@ check2 = st.sidebar.checkbox('Os 10 usuários mais citados')
 check3 = st.sidebar.checkbox('As palavras mais usadas')
 check4 = st.sidebar.checkbox('As hashtags mais usada e suas relações')
 
-##### FIM SIDE BAR
+# FIM SIDE BAR
 
-##### FUNCTIONS
+
+# FUNCTIONS
 
 if input_word != '':
     df_tweets = load_data(input_word)
@@ -82,12 +86,13 @@ if input_word != '':
 
     if check1:
 
+        """ ### Os 5 Tweets Mais Retweetados:"""
         tweets_5 = five_most_recent_highest_retweets(
             df_tweets)  # Chamada da função
 
         # Mostra o resultado dos 5 tweets na tela
 
-        """ ### 5 Tweets mais retweetados:""", st.table(tweets_5)
+        st.table(tweets_5)
 
     #######################################################################
 
@@ -97,7 +102,7 @@ if input_word != '':
 
         users = most_arroba(df_tweets)  # chamada da função
 
-        """ ### @Usuários mais citados """
+        """ ### @ Usuários Mais Citados """
 
         plot_users = px.bar(users, y=users.index, x='count',
                             text='count', labels={})
@@ -115,20 +120,20 @@ if input_word != '':
 
         freq_all_words = FreqDist(words)
         freq_df = pd.DataFrame(data=freq_all_words.most_common(
-            10), columns=['Word', 'Frequency'])
+            10), columns=['Palavras', 'Frequências'])
 
         # Plota as palavras mais frequentes
 
-        """ ### As mais palavras mais usadas """
-        plot_freq = px.bar(freq_df, y='Word', x='Frequency',
-                           orientation='h', text='Frequency')
+        """ ### As Palavras Mais Usadas """
+        plot_freq = px.bar(freq_df, y='Palavras', x='Frequências',
+                           orientation='h', text='Frequências')
         plot_freq['layout']['yaxis']['autorange'] = "reversed"
 
         st.plotly_chart(plot_freq)
 
         # Plota a nuvem de palavras
-        """ ### Nuvem de palavras 
-        Quanto mais frequente a palavra, maior ela é. """
+        """ ### Nuvem de Palavras 
+        Quanto maior a frequeência da palavra, maior ela se apresenta na nuvem """
 
         twitter_fig = np.array(Image.open("twitter_black.png"))
 
@@ -154,7 +159,7 @@ if input_word != '':
         rules.consequents = rules.consequents.apply(lambda x: next(iter(x)))
 
         """ ### Associação entre #hashtags 
-        Caso não apareça nada, é porque não há associação."""
+        Caso não apareça, é porque não há associação."""
         fig, ax = plt.subplots(figsize=(16, 9))
         GA = nx.from_pandas_edgelist(
             rules, source='antecedents', target='consequents')

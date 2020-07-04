@@ -19,6 +19,7 @@ from string import punctuation
 
 q_query = ' -filter:retweets'
 
+
 def extract_data(query, head=5, lang='pt', items=500):
     # RETWEET = []
     TWEET = []
@@ -36,18 +37,19 @@ def extract_data(query, head=5, lang='pt', items=500):
         TWEET.append([tweet.id, tweet.created_at, tweet.user.location, tweet.full_text.replace('\n', ' '),
                       tweet.retweet_count, [e['text'] for e in tweet._json['entities']['hashtags']]])
         TW = pd.DataFrame(TWEET, columns=[
-                          'id', 'timestamp', 'location', 'tweet', 'retweet_count', 'hashtags'])
+                          'id', 'timestamp', 'location', 'tweet', 'Retweets', 'hashtags'])
         # rtw = pd.DataFrame(data, RETWEET=['id', 'timestamp', 'location', 'tweet', 'retweet_count', 'hashtags'])
     return TW
 
 
 def five_most_recent_highest_retweets(tw, head=5):
 
-    df_five = tw[['tweet', 'retweet_count']].drop_duplicates()  # delete all duplicated texts
+    # delete all duplicated texts
+    df_five = tw[['tweet', 'Retweets']].drop_duplicates()
     # aggregate the same texts and adds up the number of different retweets.
     df_five = df_five.groupby('tweet').sum()
     # put retweets_count in descending order
-    df_five = df_five.sort_values(by='retweet_count', ascending=False).head(head)
+    df_five = df_five.sort_values(by='Retweets', ascending=False).head(head)
 
     return df_five
 
