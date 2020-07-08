@@ -19,6 +19,17 @@ twitter_token <- create_token(
   access_token = getAcessToken(),
   access_secret = getAcessSecret())
 
+# This function aim treat the input text from shiny and returns the the string 
+# ready to the extract tweets function
+treat_input <- function(input_words) {
+  if (length(input_words) == 1) {
+    return(input_words[1])
+  } else {
+    concat_words = paste(input_words, collapse = " OR ")
+    return(concat_words)
+  }
+}
+
 # The input format datetime should be a string like this: "YYYYMMDDHHMM"
 extract_data <- function(text) {
    rt <- search_30day(text,
@@ -34,14 +45,6 @@ extract_data <- function(text) {
   return(rt)
 }
 
-#dt <- extract_data("Corona V??rus")
-
-#View(dt)
-
-#Function to transform data
-#transform_data <- function(tw) {
-#
-#}
 
 #Function of 5 most recent tweets with the highest number of retweets from one term
 five_most_recent_highest_retweets <- function(tw) {
