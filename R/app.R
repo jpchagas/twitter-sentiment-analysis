@@ -4,15 +4,18 @@
 #install.packages('Rstem',repos = "http://www.omegahat.net/R")
 #install.packages('ggplot2')
 #install.packages('vctrs')
+#install.packages('modelr')
 
 
 library(shiny)
 library(ggplot2)
 library(RColorBrewer)
-source("functions.R")
 library(tm)
 library(sentimentr)
+library(vctrs)
 #library(Rstem)
+
+source("functions.R")
 
 
 #CREATE SHINY APP
@@ -79,51 +82,54 @@ server <- function(input, output) {
     
     observeEvent(input$id_btn_search, {
       
-      tw <- extract_data(input$id_txt_search)
-      #tw <-  read_twitter_csv(file = 'Tweets2.csv')
-      
-      tw_five <- five_most_recent_highest_retweets(tw)
-      
-      output$moreControls <- renderUI({
-        geraViewTopTweets(tw_five)
-      })
-      
-      output$distPlot <- renderPlot({
+      if (input$id_txt_search != "") {
+       
+        tw <- extract_data(input$id_txt_search)
+        #tw <-  read_twitter_csv(file = 'Tweets2.csv')
         
-        ggplot(data=tw_five, aes(x=dose, y=len)) +
-          geom_bar() +
-          coord_flip()
+        print(head(tw))
         
-      })
-      
-      output$tweets <-renderTable(
-        tw_five,
-        options = list(dom = 't', 
-                       paging = FALSE
-        ))
-      
-      
-      output$palavras <- renderPlot({
-        wordcloud(words = names(word.freq), freq = word.freq, max.words = 100, 
-                  random.order = TRUE)
-      })
-      
-      output$hashtag <- renderPlot({
-        wordcloud(words = names(word.freq), freq = word.freq, max.words = 100, 
-                  random.order = TRUE)
-      })
-      
-      output$usuario <- renderPlot({
+        tw_five <- five_most_recent_highest_retweets(tw)
         
-        ggplot(data=most_arroba(tw), aes(x=vector_names, y=count_names)) +
-          geom_bar(stat="identity", fill='lightblue') +
-          xlab('Usuários') + 
-          ylab('Citações') + 
-          theme_minimal(base_size = 12) +
-          coord_flip() 
+        output$moreControls <- renderUI({
+          geraViewTopTweets(tw_five)
+        })
         
-      })
-      
+        output$distPlot <- renderPlot({
+          
+          ggplot(data=tw_five, aes(x=dose, y=len)) +
+            geom_bar() +
+            coord_flip()
+          
+        })
+        
+        output$palavras <- renderPlot({
+          hashtags_relationships(tw)
+        })
+        
+        
+        
+        #output$palavras <- renderPlot({
+        #  wordcloud(words = names(word.freq), freq = word.freq, max.words = 100, 
+        #            random.order = TRUE)
+        #})
+        
+        output$hashtag <- renderPlot({
+          wordcloud(words = names(word.freq), freq = word.freq, max.words = 100, 
+                    random.order = TRUE)
+        })
+        
+        output$usuario <- renderPlot({
+          
+          ggplot(data=most_arroba(tw), aes(x=vector_names, y=count_names)) +
+            geom_bar(stat="identity", fill='lightblue') +
+            xlab('Usuários') + 
+            ylab('Citações') + 
+            theme_minimal(base_size = 12) +
+            coord_flip() 
+          
+        })
+      }
     })
   }
 

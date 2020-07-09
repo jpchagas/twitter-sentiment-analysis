@@ -2,11 +2,15 @@
 #install.packages('plyr')
 #install.packages('stringr')
 #install.packages('dplyr')
+#install.packages('tidyverse')
+
 
 library(rtweet)
 library(plyr)
 library(stringr)
+library(dplyr)
 library(tidyverse)
+
 
 # Don't forget to use setwd("path/to/your/directory") to function source works!
 source("credentials.R")
@@ -48,6 +52,8 @@ extract_data <- function(text) {
 
 #Function of 5 most recent tweets with the highest number of retweets from one term
 five_most_recent_highest_retweets <- function(tw) {
+  
+  print(head(tw))
   
   tw_temp <- tw %>%
     
