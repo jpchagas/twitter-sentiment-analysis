@@ -2,11 +2,15 @@
 #install.packages('plyr')
 #install.packages('stringr')
 #install.packages('dplyr')
+#install.packages('tm')
+#install.packages('wordcloud2')
 
 library(rtweet)
 library(plyr)
 library(stringr)
 library(tidyverse)
+library(wordcloud2)
+library(tm)
 
 # Don't forget to use setwd("path/to/your/directory") to function source works!
 source("credentials.R")
@@ -113,8 +117,20 @@ most_arroba <- function(twitter_df) {
 }
 
 #Function of most used words in tweets disregarding stopwords
-most_words <- function() {
+most_words <- function(df) {
+  to_lower <- tolower(linhas)
   
+  own_stopwords <- c(stopwords(kind='pt'), 'pra', 'pro', 'tb', 'vc', 'aí', 'tá',
+                     'ah', 'eh', 'oh', 'msm', 'q', 'r', 'lá', 'ue', 'ué', 'pq')
+  
+  removes<- removeWords(to_lower, own_stopwords)
+  
+  removes <- str_replace_all(removes, c('^@', '_'), '')
+  
+  palavras <- strsplit(removes, "\\W+")
+  Words <- unlist(palavras)
+  contagem <- table(Words)
+  contagem[order(-contagem)][1:10]
 }
 
 geraViewTopTweets <- function(df) {
