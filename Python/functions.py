@@ -20,7 +20,7 @@ from string import punctuation
 q_query = ' -filter:retweets'
 
 
-def extract_data(query, head=5, lang='pt', items=200):
+def extract_data(query, head=5, lang='pt', items=500):
     # RETWEET = []
     TWEET = []
     for tweet in tw.tweepy.Cursor(tw.api.search,
