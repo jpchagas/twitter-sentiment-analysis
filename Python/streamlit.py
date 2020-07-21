@@ -8,6 +8,7 @@ from wordcloud import WordCloud
 import matplotlib.pyplot as plt
 from nltk import FreqDist
 import networkx as nx
+import webbrowser as wb
 
 from PIL import Image
 from pathlib import Path  # para a logo
@@ -31,6 +32,7 @@ def img_to_bytes(img_path):
 sidebar_html = "<img src='data:image/png;base64,{}' class='img-fluid'>".format(
     img_to_bytes("logo.png"))
 
+
 st.sidebar.markdown(sidebar_html, unsafe_allow_html=True,)
 
 # FIM LOGO
@@ -38,10 +40,10 @@ st.sidebar.markdown(sidebar_html, unsafe_allow_html=True,)
 """
 # Bem vind@! Que tal analisar uns tweets?
 
-O Twitter é uma rede social que permite ao usuário expor o que pensa, enviar e receber 
+O **Twitter** é uma rede social que permite ao usuário expor o que pensa, enviar e receber 
 atualizações de outros usuários, acompanhar notícias, avaliar produtos e serviços, etc. 
-O que torna essa rede social uma grande fonte de dados, onde é possível buscar pelo assunto de interesse, 
-ou, mais profissionalmente, sua empresa pode saber como seu produto ou serviço está sendo visto pelo cosumidor.
+Isso torna essa rede social uma grande fonte de dados onde é possível buscar pelo assunto de interesse 
+ou, mais profissionalmente, saber como o produdo ou serviço da sua empresa está sendo visto pelo cosumidor.
 """
 
 # Extração de tweets com a plavra input
@@ -71,8 +73,29 @@ check2 = st.sidebar.checkbox('Os 10 usuários mais citados')
 check3 = st.sidebar.checkbox('As palavras mais usadas')
 check4 = st.sidebar.checkbox('As hashtags mais usada e suas relações')
 
-# FIM SIDE BAR
 
+#### LINKEDINS
+
+st.sidebar.markdown('**Hey! Dá uma olhada no nosso time:**')
+# st.sidebar.markdown('')
+if st.sidebar.button('Denis Dinardi'):
+    denis = 'https://www.linkedin.com/in/denisdinardi/'
+    wb.open_new_tab(denis)
+if st.sidebar.button('Edson Guilherme'):
+    edson = 'https://www.linkedin.com/in/edson-guilherme-appoloni-correia-19897134/'
+    wb.open_new_tab(edson)
+if st.sidebar.button('João Pedro'):
+    joao = 'https://www.linkedin.com/in/joão-chagas/'
+    wb.open_new_tab(joao)
+if st.sidebar.button('Nayara Moura'):
+    nayara = 'https://www.linkedin.com/in/nayara-cfm/'
+    wb.open_new_tab(nayara)
+if st.sidebar.button('Paulo Lima'):
+    paulo = 'https://www.linkedin.com/in/dspaulolima'
+    wb.open_new_tab(paulo)
+    
+
+# FIM SIDE BAR
 
 # FUNCTIONS
 
@@ -133,7 +156,7 @@ if input_word != '':
 
         # Plota a nuvem de palavras
         """ ### Nuvem de Palavras 
-        Quanto maior a frequeência da palavra, maior ela se apresenta na nuvem """
+        Quanto maior a frequência da palavra, maior ela se apresenta na nuvem """
 
         twitter_fig = np.array(Image.open("twitter_black.png"))
 
@@ -163,7 +186,17 @@ if input_word != '':
         fig, ax = plt.subplots(figsize=(16, 9))
         GA = nx.from_pandas_edgelist(
             rules, source='antecedents', target='consequents')
-        nx.draw(GA, with_labels=True)
+        circPos=nx.circular_layout(GA)
+        
+        pos_attrs = {}
+        
+        for node, coords in circPos.items():
+            pos_attrs[node] = (coords[0]+0.1*(-1)*np.sign(coords[0]),
+                               coords[1]+0.1*(-1)*np.sign(coords[1]))
+            
+        nx.draw(GA, with_labels=True, pos=pos_attrs, alpha=0.3)
+        nx.draw_networkx_labels(GA, pos_attrs, alpha=1)
+
         st.pyplot()
 
     #######################################################################
