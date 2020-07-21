@@ -2,15 +2,22 @@
 #install.packages('plyr')
 #install.packages('stringr')
 #install.packages('dplyr')
+<<<<<<< HEAD
 #install.packages('tm')
 #install.packages('wordcloud2')
+=======
+#install.packages('tidyverse')
+
+>>>>>>> 0452ce5bcf57f86ee5c23c3ac0a822ef1c2fd8ad
 
 library(rtweet)
 library(plyr)
 library(stringr)
+library(dplyr)
 library(tidyverse)
 library(wordcloud2)
 library(tm)
+
 
 # Don't forget to use setwd("path/to/your/directory") to function source works!
 source("credentials.R")
@@ -22,6 +29,17 @@ twitter_token <- create_token(
   consumer_secret = getConsumerSecret(),
   access_token = getAcessToken(),
   access_secret = getAcessSecret())
+
+# This function aim treat the input text from shiny and returns the the string 
+# ready to the extract tweets function
+treat_input <- function(input_words) {
+  if (length(input_words) == 1) {
+    return(input_words[1])
+  } else {
+    concat_words = paste(input_words, collapse = " OR ")
+    return(concat_words)
+  }
+}
 
 # The input format datetime should be a string like this: "YYYYMMDDHHMM"
 extract_data <- function(text) {
@@ -38,17 +56,11 @@ extract_data <- function(text) {
   return(rt)
 }
 
-#dt <- extract_data("Corona V??rus")
-
-#View(dt)
-
-#Function to transform data
-#transform_data <- function(tw) {
-#
-#}
 
 #Function of 5 most recent tweets with the highest number of retweets from one term
 five_most_recent_highest_retweets <- function(tw) {
+  
+  print(head(tw))
   
   tw_temp <- tw %>%
     
