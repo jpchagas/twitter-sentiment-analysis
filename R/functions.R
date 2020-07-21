@@ -9,7 +9,7 @@
 #install.packages('tidyverse')
 
 >>>>>>> 0452ce5bcf57f86ee5c23c3ac0a822ef1c2fd8ad
-
+setwd('C:/Mega/Portfolio/git-projects/twitter-sentiment-analysis/R')
 library(rtweet)
 library(plyr)
 library(stringr)
@@ -130,9 +130,12 @@ most_arroba <- function(twitter_df) {
 
 #Function of most used words in tweets disregarding stopwords
 most_words <- function(df) {
-  to_lower <- tolower(linhas)
   
-  own_stopwords <- c(stopwords(kind='pt'), 'pra', 'pro', 'tb', 'vc', 'aí', 'tá',
+  to_lower <- tolower(df)
+  
+  stopw <- unlist(read_table(file = '../portuguese_stopwords.txt'))
+
+  own_stopwords <- c(stopwords(kind='pt'), stopw, 'pra', 'pro', 'tb', 'vc', 'aí', 'tá',
                      'ah', 'eh', 'oh', 'msm', 'q', 'r', 'lá', 'ue', 'ué', 'pq')
   
   removes<- removeWords(to_lower, own_stopwords)
