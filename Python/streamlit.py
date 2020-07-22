@@ -33,7 +33,7 @@ sidebar_html = "<img src='data:image/png;base64,{}' class='img-fluid'>".format(
     img_to_bytes("logo.png"))
 
 
-st.sidebar.markdown(sidebar_html, unsafe_allow_html=True,)
+st.sidebar.markdown(sidebar_html, unsafe_allow_html=True)
 
 # FIM LOGO
 
