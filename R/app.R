@@ -61,15 +61,16 @@ ui <- fluidPage(theme = "bootstrap.css",
                plotOutput("usuario", height = 175)   
         )
       ),
+      br(),
       fluidRow(
         column(width = 6,
-               h4("# mais utilizadas"),
-               plotOutput("palavras") #
+               h4("# mais utilizadas e seus relacionamentos"),
+               plotOutput("hashtag") #
                #imageOutput("palavras") #, width = 750, height = 250)
         ),
         column(width = 6, 
                h4("palavras mais utilizadas"),
-               plotOutput("hashtag") #
+               plotOutput("palavras")
                #imageOutput("hashtag") #, width = 750, height = 250)
         )
       )
@@ -85,9 +86,8 @@ server <- function(input, output) {
       if (input$id_txt_search != "") {
        
         tw <- extract_data(input$id_txt_search)
-        #tw <-  read_twitter_csv(file = 'Tweets2.csv')
-        
-        print(head(tw))
+        write_as_csv(tw, file_name = 'Tweets.csv')
+        tw <-  read_twitter_csv(file = 'Tweets.csv')
         
         tw_five <- five_most_recent_highest_retweets(tw)
         
@@ -95,33 +95,9 @@ server <- function(input, output) {
           geraViewTopTweets(tw_five)
         })
         
-        output$distPlot <- renderPlot({
-          
-          ggplot(data=tw_five, aes(x=dose, y=len)) +
-            geom_bar() +
-            coord_flip()
-          
-        })
-        
-        output$palavras <- renderPlot({
-          hashtags_relationships(tw)
-        })
-        
-        
-        
-        #output$palavras <- renderPlot({
-        #  wordcloud(words = names(word.freq), freq = word.freq, max.words = 100, 
-        #            random.order = TRUE)
-        #})
-        
-        output$hashtag <- renderPlot({
-          wordcloud(words = names(word.freq), freq = word.freq, max.words = 100, 
-                    random.order = TRUE)
-        })
-        
         output$usuario <- renderPlot({
           
-          ggplot(data=most_arroba(tw), aes(x=vector_names, y=count_names)) +
+          ggplot(data=most_arroba(tw), aes(x=reorder(Usuario, +Frequencia), y=Frequencia)) +
             geom_bar(stat="identity", fill='lightblue') +
             xlab('Usuários') + 
             ylab('Citações') + 
@@ -129,6 +105,23 @@ server <- function(input, output) {
             coord_flip() 
           
         })
+        
+        
+        output$palavras <- renderPlot({
+          ggplot(data=most_words(tw), aes(x=reorder(Palavra, +Frequencia), y=Frequencia)) +
+            geom_bar(stat="identity", fill='lightblue') +
+            xlab('Palavras') + 
+            ylab('Citações') + 
+            theme_minimal(base_size = 12) +
+            coord_flip() 
+          
+        })
+        
+        output$hashtag <- renderPlot({
+          hashtags_relationships(tw)
+        })
+        
+        
       }
     })
   }

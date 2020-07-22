@@ -2,14 +2,11 @@
 #install.packages('plyr')
 #install.packages('stringr')
 #install.packages('dplyr')
-<<<<<<< HEAD
 #install.packages('tm')
 #install.packages('wordcloud2')
-=======
 #install.packages('tidyverse')
+#install.packages('splitstackshape') 
 
->>>>>>> 0452ce5bcf57f86ee5c23c3ac0a822ef1c2fd8ad
-setwd('C:/Mega/Portfolio/git-projects/twitter-sentiment-analysis/R')
 library(rtweet)
 library(plyr)
 library(stringr)
@@ -17,11 +14,11 @@ library(dplyr)
 library(tidyverse)
 library(wordcloud2)
 library(tm)
-
+library(plyr)
 
 # Don't forget to use setwd("path/to/your/directory") to function source works!
 source("credentials.R")
-source("data_example.R")
+#source("data_example.R")
 
 twitter_token <- create_token(
   app = getApp(),
@@ -76,7 +73,7 @@ five_most_recent_highest_retweets <- function(tw) {
 }
 
 #Function of # most used and their relationships
-most_hashtag <- function(twitter_df) {
+most_hashtag <- function(tw) {
   vector_hashtags = c()
   hashtags_subset %>%
     subset(subset = !is.na(hashtags), select = hashtags)
@@ -89,31 +86,51 @@ most_hashtag <- function(twitter_df) {
       vector_hashtags = c(vector_hashtags, names)
     }
   }
-  df_count_hashtags = tibble(vector_hashtags) %>%
+  tw_count_hashtags = tibble(vector_hashtags) %>%
     count(vector_hashtags, name = "count_hashtags")
-  return(df_count_hashtags)
+  return(tw_count_hashtags)
 }
 
-hashtags_relationships <- function(twiitter_df) {
+hashtags_relationships <- function(twiitter_tw) {
+  
   two_or_more_hashtags = c()
-  only_hashtags = twiitter_df %>%
+  
+  only_hashtags = twiitter_tw %>%
     subset(!is.na(hashtags), select = hashtags)
+  
   for (element in only_hashtags) {
     if (length(element)>1) {
       two_or_more_hashtags = c(two_or_more_hashtags, element)
     }
   }
-  rules = two_or_more_hashtags %>%
+  
+  # unique items
+  str_un <- unique(unlist(stri_split_fixed(two_or_more_hashtags,' ')))
+  
+  # create a dataframe with dimensions:
+  # length(shopping_items) x length(str_un)
+  df <- as.data.frame(matrix(rep(0,length(str_un)*length(two_or_more_hashtags)),ncol=length(str_un)))
+  names(df) <- str_un
+  
+  # positions of 1's in each column
+  vecs <- map(str_un,grep,two_or_more_hashtags)
+  
+  sapply(1:length(str_un), function(x) df[,x][vecs[[x]]] <<- 1)
+  df[] <- lapply(df,as.factor)
+  
+  rules = df %>%
     as("transactions") %>%
     apriori(parameter = list(supp = 0.001, conf = 0.7, minlen=2)) %>%
     head(n = 10, by = "confidence")
-  return(plot(rules, method = "graph",  engine = "htmlwidget"))
+  
+  #return(plot(rules, method = "graph",  engine = "graphviz"))
+  return(plot(rules, method = "graph"))
 }
 
 #Function of most cited @User accounts in the tweets
-most_arroba <- function(twitter_df) {
+most_arroba <- function(tw) {
   vector_names = c()
-  names_subset = twitter_df[, c("mentions_screen_name")]
+  names_subset = tw[, c("mentions_screen_name")]
   names_subset = names_subset[!is.na(names_subset$mentions_screen_name),]
   for (names in names_subset) {
     if (length(names) > 1) {
@@ -121,46 +138,74 @@ most_arroba <- function(twitter_df) {
         vector_names = c(vector_names, element)
       }
     } else {
-        vector_names = c(vector_names, names)
+      vector_names = c(vector_names, names)
     }
   }
-  df_count_names = tibble(vector_names) %>% count(vector_names, name = "count_names")
-  return(df_count_names)
+  
+  vector_names <- tibble(vector_names)
+  colnames(vector_names) <-  c("Usuario")
+  
+  tw_count_names <- vector_names %>%
+    cSplit('Usuario', ' ') %>%
+    unlist() %>%
+    tibble() %>%
+    drop_na() %>%
+    count(".") %>%
+    arrange(desc(freq)) %>%
+    slice(1:5)
+  
+  colnames(tw_count_names) <- c("Usuario", "Frequencia")
+  
+  return(tw_count_names)
 }
 
 #Function of most used words in tweets disregarding stopwords
-most_words <- function(df) {
+most_words <- function(tw) {
   
-  to_lower <- tolower(df)
+  to_lower <- tolower(tw$text)
   
-  stopw <- unlist(read_table(file = '../portuguese_stopwords.txt'))
-
-  own_stopwords <- c(stopwords(kind='pt'), stopw, 'pra', 'pro', 'tb', 'vc', 'aí', 'tá',
-                     'ah', 'eh', 'oh', 'msm', 'q', 'r', 'lá', 'ue', 'ué', 'pq')
+  stopw <- unlist(read_table(file = '../portuguese_stopwords.txt', col_names = FALSE))
   
-  removes<- removeWords(to_lower, own_stopwords)
+  removes<- removeWords(to_lower, stopw)
+  removes<- removeWords(removes, stopwords(kind='pt'))
+  removes<- removeWords(removes, c('pra', 'pro', 'tb', 'vc', 'a', 'tÃ¡', 'ah', 'eh', 'oh', 'msm', 'q', 'r', 'lÃ¡', 'ue', 'uÃ©', 'pq', 'http', 'https', 'u', 'co', ' ', 't'))
   
   removes <- str_replace_all(removes, c('^@', '_'), '')
   
   palavras <- strsplit(removes, "\\W+")
   Words <- unlist(palavras)
-  contagem <- table(Words)
-  contagem[order(-contagem)][1:10]
+  
+  Words <- tibble(Words)
+  colnames(Words) <-  c("Palavra")
+  
+  tw_count_words <- Words %>%
+    cSplit('Palavra', ' ') %>%
+    unlist() %>%
+    tibble() %>%
+    drop_na() %>%
+    count(".") %>%
+    arrange(desc(freq)) %>%
+    slice(1:10)
+  
+  colnames(tw_count_words) <- c("Palavra", "Frequencia")
+  
+  return(tw_count_words)
 }
 
-geraViewTopTweets <- function(df) {
+
+geraViewTopTweets <- function(tw) {
   testelinha = 0
-  if (dim(df)[1] == 5) {
+  if (dim(tw)[1] == 5) {
     linha = 5
   } else {
-    linha = dim(df)[1]
+    linha = dim(tw)[1]
   }
   
   vetor_html = list()
   
   for (i in 1:linha){
-    tweet <- df[i, 'Tweet']
-    vetor_html[[i]] <- geraHTML(df[i,])
+    tweet <- tw[i, 'Tweet']
+    vetor_html[[i]] <- geraHTML(tw[i,])
   }
   
   return (vetor_html)
