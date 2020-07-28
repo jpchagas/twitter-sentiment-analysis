@@ -1,3 +1,29 @@
+dist: trusty   # Use Ubuntu 14.04 image (instead of 12.04)
 language: r
+sudo: false
+r: 3.6.3
 
-  
+# Install packrat if needed and have it restore packages.
+install:
+    - R -e 'if (system.file(package="readr") == "") install.packages("shiny")'
+    - R -e 'if (system.file(package="readr") == "") install.packages("sentimentr")'
+    - R -e 'if (system.file(package="readr") == "") install.packages("Rstem",repos = "http://www.omegahat.net/R")'
+    - R -e 'if (system.file(package="readr") == "") install.packages("ggplot2")'
+    - R -e 'if (system.file(package="readr") == "") install.packages("vctrs")'
+    - R -e 'if (system.file(package="readr") == "") install.packages("modelr")'
+    - R -e 'if (system.file(package="readr") == "") install.packages("rtweet")'
+    - R -e 'if (system.file(package="readr") == "") install.packages("plyr")'
+    - R -e 'if (system.file(package="readr") == "") install.packages("stringr")'
+    - R -e 'if (system.file(package="readr") == "") install.packages("dplyr")'
+    - R -e 'if (system.file(package="readr") == "") install.packages("tm")'
+    - R -e 'if (system.file(package="readr") == "") install.packages("wordcloud2")'
+    - R -e 'if (system.file(package="readr") == "") install.packages("tidyverse")'
+    - R -e 'if (system.file(package="readr") == "") install.packages("splitstackshape")'
+
+script:
+  - R -f run_tests.R
+
+deploy:
+    provider: heroku
+    api_key: $HEROKU_TOKEN
+    app: twitter-sentiment-analysis-r
