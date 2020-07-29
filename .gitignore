@@ -44,7 +44,7 @@ vignettes/*.pdf
 
 <<<<<<< HEAD
 #Credentials file
-credentials.R
+#credentials.R
 =======
 # Python
 .ipynb_checkpoints
